@@ -2,7 +2,7 @@ import userModel from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import config from '../config/config.js';
-
+import { publishToQueue } from '../broker/rabbit.js';
 
 
 
@@ -37,6 +37,12 @@ export async function register(req, res) {
         fullname: user.fullname
     }, config.JWT_SECRET, { expiresIn: "2d" })
 
+    await publishToQueue("user_created",{
+        id:user._id,
+        email: user.email,
+        fullname: user.fullname,
+        role: user.role
+    })
 
     res.cookie("token", token)
 
@@ -92,6 +98,12 @@ export async function googleAuthCallback(req, res) {
         }
     })
 
+    await publishToQueue("user_created",{
+        id:user._id,
+        email: user.email,
+        fullname: user.fullname,
+        role: user.role
+    })
 
     const token = jwt.sign({
         id: newUser._id,
