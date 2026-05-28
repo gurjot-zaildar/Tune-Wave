@@ -2,14 +2,14 @@ import mongoose, { Types } from "mongoose";
 
 const userSchema = new mongoose.Schema({
     email:{
-        Type :String,
+        type :String,
         required: true,
         unique:true
     },
     fullname:{
         firstName:{
             type:String,
-            required:true
+            required: true
         },
         lastName:{
             type:String,
@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-        required:()=>!this.googleId
+        required: function(){ return !this.googleId }
     },
     googleId:{
         type:String
